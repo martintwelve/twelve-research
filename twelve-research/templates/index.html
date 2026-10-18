@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="hero">
+  <div class="wrap">
+    <h1><span class="br">Twelve Research</span></h1>
+    <p>Independent equity research. Long-form theses on the companies and industries shaping the next decade.</p>
+    <div class="actions">
+      <a class="btn lg" href="{{ url_for('research') }}">Read the research</a>
+      {% if not is_member %}<a class="btn ghost lg" href="{{ url_for('subscribe') }}">Become a member &mdash; ${{ price }}/mo</a>{% endif %}
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap">
+    <div class="section-head">
+      <h2 class="br">Latest research</h2>
+      <a href="{{ url_for('research') }}">All research &rarr;</a>
+    </div>
+    {% include "_post_list.html" %}
+  </div>
+</section>
+
+{% if alerts %}
+<section class="section live-strip">
+  <div class="wrap">
+    <div class="section-head">
+      <h2 class="br">Live from the desk</h2>
+      <a href="{{ url_for('intelligence') }}">Twelve Intelligence &rarr;</a>
+    </div>
+    <p class="strip-tagline">{{ pro_tagline }}</p>
+    <ol class="feed feed-compact">
+      {% for a in alerts %}
+      <li class="alert{{ ' alert-locked' if not is_pro }}">
+        <div class="alert-head">
+          <span class="alert-ticker">{{ a.ticker }}</span>
+          <span class="alert-action act-{{ a.action }}">{{ a.action }}</span>
+          {% if a.level %}<span class="alert-level">@ {{ a.level }}</span>{% endif %}
+          <time datetime="{{ a.created_at }}">{{ a.created_at.strftime('%d %b, %H:%M') }} UTC</time>
+        </div>
+        {% if is_pro %}<p class="alert-thesis">{{ a.thesis }}</p>
+        {% else %}<p class="alert-thesis locked-text">Thesis and rationale are for Twelve Intelligence members &mdash; <a href="{{ url_for('subscribe') }}">${{ pro_price }}/month</a>.</p>{% endif %}
+      </li>
+      {% endfor %}
+    </ol>
+  </div>
+</section>
+{% endif %}
+
+{% if figures %}
+<section class="section dashboard">
+  <div class="wrap">
+    <div class="section-head">
+      <h2 class="br">What we're watching</h2>
+      <span class="label">Updated {{ figures.stats.as_of }}</span>
+    </div>
+    <p class="dashboard-intro">Three series we keep on the desk, rebuilt from <a href="https://epoch.ai/data" rel="noopener">Epoch AI's</a> public data. Capability is compounding on a straight line, the compute behind it is doubling twice a year, and the buildings housing it still take two years to put up.</p>
+
+    {% with kicker='Capability', wide=true, csv='eci.csv',
+            headline='The frontier gains ' ~ figures.stats.eci_closed.slope ~ ' ECI points a year, and open weights trail by about ' ~ figures.stats.open_lag_months ~ ' months.',
+            note='Each grey dot is a tracked model release. The lines follow the best score achieved to that date, split by whether the weights are public; the wash is each model\'s 90% interval.',
+            svg=figures.capability, table=figures.tables.capability %}
+      {% include "_figure.html" %}
+    {% endwith %}
+
+    <div class="figure-pair">
+      {% with kicker='Compute', wide=false, csv='compute_stock.csv',
+              headline='Tracked compute is doubling every ' ~ figures.stats.compute.doubling_months ~ ' months.',
+              note='H100-equivalents installed across tracked AI data centres. Dashed lines are capacity already announced or under construction.',
+              svg=figures.compute, table=figures.tables.compute %}
+        {% include "_figure.html" %}
+      {% endwith %}
+
+      {% with kicker='Build time', wide=false, csv='build_time.csv',
+              headline='Sites get bigger; schedules do not get shorter.',
+              note='Months from ground-breaking to the first building going live. The median holds near ' ~ figures.stats.build.median_months ~ ' months with no trend (R² ' ~ figures.stats.build.r2 ~ ').',
+              svg=figures.build, table=figures.tables.build %}
+        {% include "_figure.html" %}
+      {% endwith %}
+    </div>
+
+    <p class="dashboard-foot">Charts built from <a href="https://epoch.ai/data" rel="noopener">Epoch AI</a> data, used under <a href="https://creativecommons.org/licenses/by/4.0/" rel="noopener">CC BY 4.0</a>. Our calculations, so any errors are ours. Hover any mark for the underlying figure.</p>
+  </div>
+</section>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Twelve Research{% endblock %}</title>
+  <meta name="description" content="{% block description %}Independent equity research from Twelve Research.{% endblock %}">
+  <link rel="icon" href="{{ url_for('static', filename='favicon.svg') }}" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap">
+      <a class="wordmark" href="{{ url_for('home') }}"><span class="br"><span class="wm-full">Twelve Research</span><span class="wm-short">Twelve</span></span></a>
+      <nav class="nav">
+        {% if coming_soon and not is_admin %}
+          <span class="label">Opening soon</span>
+        {% else %}
+        <a class="hide-xs" href="{{ url_for('research') }}" {% if request.endpoint in ('research', 'article') %}aria-current="page"{% endif %}>Research</a>
+        <a href="{{ url_for('intelligence') }}" {% if request.endpoint == 'intelligence' %}aria-current="page"{% endif %}>Intelligence</a>
+        <a class="hide-sm" href="{{ url_for('about') }}" {% if request.endpoint == 'about' %}aria-current="page"{% endif %}>About</a>
+        {% if current_email %}
+          <a href="{{ url_for('portfolio') }}" {% if request.endpoint == 'portfolio' %}aria-current="page"{% endif %}>Portfolio</a>
+          <a class="hide-sm" href="{{ url_for('account') }}" {% if request.endpoint == 'account' %}aria-current="page"{% endif %}>Account</a>
+        {% else %}
+          <a class="hide-sm" href="{{ url_for('login') }}">Sign in</a>
+          <a href="{{ url_for('signup') }}">Create account</a>
+        {% endif %}
+        {% if is_admin %}<a href="{{ url_for('admin') }}">Desk</a>{% endif %}
+        {% if not is_pro %}<a class="btn" href="{{ url_for('subscribe') }}">Subscribe</a>{% endif %}
+        {% endif %}
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}<div class="wrap">{% for m in messages %}<div class="flash">{{ m }}</div>{% endfor %}</div>{% endif %}
+    {% endwith %}
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap">
+      <span>&copy; {{ year }} Twelve Research Pte Ltd</span>
+      <nav>
+        {% if not coming_soon or is_admin %}
+        <a href="{{ url_for('research') }}">Research</a>
+        <a href="{{ url_for('about') }}">About</a>
+        <a href="{{ url_for('intelligence') }}">Intelligence</a>
+        <a href="{{ url_for('subscribe') }}">Membership</a>
+        {% endif %}
+        <a href="https://seekingalpha.com/" rel="noopener">Seeking Alpha</a>
+        <a href="https://substack.com/" rel="noopener">Substack</a>
+      </nav>
+      <p class="fine">Twelve Research Pte Ltd is registered in Singapore. Twelve Research publishes research for informational purposes only. Nothing on this site is investment advice or a recommendation to buy or sell any security. Do your own research; the author may hold positions in securities discussed.</p>
+    </div>
+  </footer>
+
+  <script>
+    // Charts are wider than a phone screen: open them at the right-hand (most
+    // recent) edge rather than at the start of the series.
+    for (const plot of document.querySelectorAll('.figure-plot')) {
+      plot.scrollLeft = plot.scrollWidth;
+    }
+  </script>
+</body>
+</html>

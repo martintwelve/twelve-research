@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Sign in — Twelve Research{% endblock %}
+{% block content %}
+<div class="wrap">
+  <div class="page-title">
+    <span class="label br">Sign in</span>
+    <h1>Welcome back.</h1>
+    <p>Enter the email you subscribed with. We'll send you a link to sign in, no password needed.</p>
+  </div>
+  <form class="form" method="post" action="{{ url_for('login') }}">
+    <label for="email">Email</label>
+    <input id="email" type="email" name="email" autocomplete="email" required autofocus>
+    <input type="hidden" name="next" value="{{ next }}">
+    <button class="btn lg block" type="submit">Email me a sign-in link</button>
+    <p class="hint">Not a member yet? <a href="{{ url_for('subscribe') }}">Subscribe for ${{ price }}/month</a>.</p>
+  </form>
+</div>
+{% endblock %}

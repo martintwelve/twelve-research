@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}Membership — Twelve Research{% endblock %}
+{% block content %}
+<div class="wrap">
+  <div class="page-title">
+    <span class="label br">Membership</span>
+    <h1>Two ways to read us.</h1>
+    <p>The research tier is the written work. Twelve Intelligence adds the live side: entries as they set up, with the thesis and rationale attached.</p>
+  </div>
+
+  <div class="plans">
+    <div class="plan">
+      <span class="label br">Research</span>
+      <div class="price">${{ price }}<small> / month</small></div>
+      <ul>
+        <li>Every research report in full</li>
+        <li>Models and valuation work</li>
+        <li>The complete archive</li>
+        <li>Cancel anytime</li>
+      </ul>
+      {% if is_member %}
+        <a class="btn ghost lg block" href="{{ url_for('account') }}">{{ 'Your current plan' if tier == 'research' else 'Included in your plan' }}</a>
+      {% else %}
+        <form method="post" action="{{ url_for('checkout') }}">
+          <input type="hidden" name="tier" value="research">
+          <button class="btn ghost lg block" type="submit">Join Research</button>
+        </form>
+      {% endif %}
+    </div>
+
+    <div class="plan plan-feature">
+      <span class="label br">Twelve Intelligence</span>
+      <p class="plan-tagline">{{ pro_tagline }}</p>
+      <div class="price">${{ pro_price }}<small> / month</small></div>
+      <ul>
+        <li>Live entries by text and email</li>
+        <li>Thesis and rationale on every call</li>
+        <li>The full live-note archive</li>
+        <li>Everything in the Research tier</li>
+      </ul>
+      {% if is_pro %}
+        <a class="btn lg block" href="{{ url_for('intelligence') }}">You're in &mdash; open the feed</a>
+      {% elif is_member %}
+        <form method="post" action="{{ url_for('billing_portal') }}">
+          <button class="btn lg block" type="submit">Upgrade to Twelve Intelligence</button>
+        </form>
+      {% else %}
+        <form method="post" action="{{ url_for('checkout') }}">
+          <input type="hidden" name="tier" value="intelligence">
+          <button class="btn lg block" type="submit">Join Twelve Intelligence</button>
+        </form>
+      {% endif %}
+      <p class="fine">Texts are opt-in: confirm your number after joining. Message and data rates may apply; reply STOP to end.</p>
+    </div>
+  </div>
+
+  <p class="plans-foot">Billing runs through Stripe. Change plan or cancel in one click from your account page. {% if not current_email %}Already a member? <a href="{{ url_for('login') }}">Sign in</a>.{% endif %}</p>
+</div>
+{% endblock %}

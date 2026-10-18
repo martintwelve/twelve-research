@@ -1,0 +1,35 @@
+#!/bin/bash
+# Publish the current state of the site. Usage: ./publish "Add XYZ report"
+set -e
+cd "$(dirname "$0")"
+
+if ! git rev-parse --git-dir >/dev/null 2>&1; then
+  echo "This folder isn't a git repository yet."; exit 1
+fi
+
+# Warn about reports still marked as drafts.
+drafts=$(grep -l '^draft: true' content/articles/*.md 2>/dev/null || true)
+if [ -n "$drafts" ]; then
+  echo "Note: these are still drafts and won't appear on the site:"
+  echo "$drafts" | sed 's|^|  |'
+  echo
+fi
+
+if [ -z "$(git status --porcelain)" ]; then
+  echo "Nothing has changed since the last publish."; exit 0
+fi
+
+git add -A
+git status --short
+echo
+git commit -q -m "${1:-Update site}"
+
+if ! git remote get-url origin >/dev/null 2>&1; then
+  echo "Saved locally. No remote set yet, so nothing was sent to the live site."
+  echo "Add one with: git remote add origin <your repo URL>"
+  exit 0
+fi
+
+echo "Publishing..."
+git push -q origin HEAD
+echo "Done. The live site rebuilds in about a minute."

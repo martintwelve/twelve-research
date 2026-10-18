@@ -1,0 +1,43 @@
+# Render Blueprint: create the service by pointing Render at this repo.
+services:
+  - type: web
+    name: twelve-research
+    runtime: python
+    plan: starter
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.12"
+      - key: SECRET_KEY
+        generateValue: true     # Render generates a long random value
+      - key: SITE_URL
+        sync: false             # set to your live https:// URL after the first deploy
+      - key: STRIPE_SECRET_KEY
+        sync: false
+      - key: STRIPE_PRICE_RESEARCH
+        sync: false
+      - key: STRIPE_PRICE_INTELLIGENCE
+        sync: false
+      - key: ADMIN_EMAIL
+        sync: false
+      - key: TWILIO_ACCOUNT_SID
+        sync: false
+      - key: TWILIO_AUTH_TOKEN
+        sync: false
+      - key: TWILIO_FROM
+        sync: false
+      - key: DATABASE_URL
+        fromDatabase:
+          name: twelve-db
+          property: connectionString
+      - key: RESEND_API_KEY
+        sync: false
+      - key: EMAIL_FROM
+        sync: false
+
+databases:
+  - name: twelve-db
+    plan: basic-256mb
+    databaseName: twelve
+    user: twelve

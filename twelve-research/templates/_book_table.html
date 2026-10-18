@@ -1,0 +1,61 @@
+{# A book of positions with P&L. Shared by the portfolio page and the Desk. #}
+<div class="book-summary">
+  <div><span class="label">Cost</span><strong>${{ '{:,.0f}'.format(data.cost) }}</strong></div>
+  <div><span class="label">Value</span><strong>{{ '${:,.0f}'.format(data.value) if data.priced else '—' }}</strong></div>
+  <div><span class="label">Unrealised</span><strong class="{{ 'up' if data.unrealised > 0 else 'down' if data.unrealised < 0 }}">
+    {{ '{:+,.0f}'.format(data.unrealised) if data.priced else '—' }}{% if data.return_pct is not none %} <small>{{ '{:+.1f}%'.format(data.return_pct) }}</small>{% endif %}</strong></div>
+  <div><span class="label">Realised</span><strong class="{{ 'up' if data.realised > 0 else 'down' if data.realised < 0 }}">{{ '{:+,.0f}'.format(data.realised) }}</strong></div>
+</div>
+
+{% if data.rows %}
+<table class="book">
+  <caption class="visually-hidden">{{ caption or "Positions" }}</caption>
+  <thead>
+    <tr><th>Position</th><th>Shares</th><th>Cost</th><th>Last</th><th>Value</th><th>P&amp;L</th><th></th></tr>
+  </thead>
+  <tbody>
+    {% for r in data.rows %}
+    <tr class="{{ 'row-closed' if r.closed }}">
+      <td>
+        <span class="book-ticker">{{ r.ticker }}</span>
+        {% if r.closed %}<span class="tag">closed {{ r.closed_on }}</span>{% endif %}
+        {% if r.note %}<span class="book-note">{{ r.note }}</span>{% endif %}
+      </td>
+      <td>{{ '{:,.0f}'.format(r.shares) }}</td>
+      <td>${{ '{:,.2f}'.format(r.cost_basis) }}</td>
+      <td>{{ '${:,.2f}'.format(r.last) if r.last else '—' }}</td>
+      <td>{{ '${:,.0f}'.format(r.value) if r.value else '—' }}</td>
+      <td class="{{ 'up' if r.pnl and r.pnl > 0 else 'down' if r.pnl and r.pnl < 0 }}">
+        {%- if r.pnl is not none %}{{ '{:+,.0f}'.format(r.pnl) }} <small>{{ '{:+.1f}%'.format(r.pnl_pct) }}</small>{% else %}—{% endif -%}
+      </td>
+      <td class="book-actions">
+        {% if not readonly %}
+        {% if not r.closed %}
+        <details>
+          <summary>Close</summary>
+          <form method="post" action="{{ url_for('portfolio_close', position_id=r.id) }}">
+            {% if book_mode %}<input type="hidden" name="book" value="1">{% endif %}
+            <input name="price" inputmode="decimal" placeholder="exit price" required>
+            <button class="link-btn" type="submit">Save</button>
+          </form>
+        </details>
+        {% endif %}
+        <form method="post" action="{{ url_for('portfolio_delete', position_id=r.id) }}" onsubmit="return confirm('Delete this position?')">
+          {% if book_mode %}<input type="hidden" name="book" value="1">{% endif %}
+          <button class="link-btn" type="submit">Delete</button>
+        </form>
+        {% endif %}
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<p class="empty">No positions yet.</p>
+{% endif %}
+
+<p class="book-foot">
+  {% if data.asof %}Prices are closing prices as of {{ data.asof }}.{% endif %}
+  {% if data.unpriced %} No close yet for {{ data.unpriced|join(', ') }}.{% endif %}
+  {% if not prices_on and not data.priced %} Price data isn't connected yet, so only cost basis is shown.{% endif %}
+</p>

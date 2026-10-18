@@ -1,0 +1,21 @@
+{# One chart: number, title, note, the SVG itself, and the numbers behind it. #}
+<figure class="figure{{ ' figure-wide' if wide else '' }}">
+  <figcaption>
+    <span class="label br">{{ kicker }}</span>
+    <h3>{{ headline }}</h3>
+    <p>{{ note }}</p>
+  </figcaption>
+  <div class="figure-plot">{{ svg | safe }}</div>
+  <p class="figure-hint">Drag the chart sideways for the earlier years.</p>
+  <details class="figure-data">
+    <summary>The numbers</summary>
+    <table>
+      <thead><tr>{% for h in table[0] %}<th>{{ h }}</th>{% endfor %}</tr></thead>
+      <tbody>
+        {% for row in table[1] %}<tr>{% for cell in row %}<td>{{ cell }}</td>{% endfor %}</tr>{% endfor %}
+      </tbody>
+    </table>
+    <p class="figure-source">Source: <a href="https://epoch.ai/data" rel="noopener">Epoch AI</a>, CC BY 4.0 &mdash;
+      <a href="{{ url_for('data_file', filename=csv) }}">download this series</a>.</p>
+  </details>
+</figure>

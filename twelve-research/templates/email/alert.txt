@@ -1,0 +1,12 @@
+[TWELVE INTELLIGENCE]
+
+{{ alert.ticker }} — {{ alert.action }}{% if alert.level %} @ {{ alert.level }}{% endif %}
+{{ alert.created_at.strftime('%d %B %Y, %H:%M') }} UTC
+
+{{ alert.thesis }}
+{% if alert.rationale %}
+{{ alert.rationale }}
+{% endif %}
+Full feed: {{ site }}/intelligence
+
+Informational purposes only; not investment advice. The author may hold positions in the securities discussed.

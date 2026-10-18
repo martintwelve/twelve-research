@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}{{ post.title }} — Twelve Research{% endblock %}
+{% block description %}{{ post.summary or post.title }}{% endblock %}
+{% block content %}
+<article class="wrap">
+  <div class="measure">
+    <header class="article-head">
+      <div class="meta">
+        <time class="label" datetime="{{ post.date.isoformat() }}">{{ post.date.strftime('%B %d, %Y') }}</time>
+        {% for t in post.tickers %}<span class="label">${{ t }}</span>{% endfor %}
+        <span class="label br">{{ 'Free' if post.access == 'free' else 'Members' }}</span>
+      </div>
+      <h1>{{ post.title }}</h1>
+      {% if post.summary %}<p class="dek">{{ post.summary }}</p>{% endif %}
+      {% if post.seeking_alpha_url or post.substack_url %}
+      <div class="also-on">
+        {% if post.seeking_alpha_url %}<a href="{{ post.seeking_alpha_url }}" rel="noopener">Read on Seeking Alpha &nearr;</a>{% endif %}
+        {% if post.substack_url %}<a href="{{ post.substack_url }}" rel="noopener">Read on Substack &nearr;</a>{% endif %}
+      </div>
+      {% endif %}
+    </header>
+
+    <div class="prose{% if locked %} fade{% endif %}">{{ body | safe }}</div>
+
+    {% if locked %}
+    <aside class="paywall">
+      <span class="label br">Members only</span>
+      <h2>Keep reading for ${{ price }} a month.</h2>
+      <p>Members get the full report, including the model and valuation, plus every future piece of research. Cancel anytime.</p>
+      <form method="post" action="{{ url_for('checkout') }}">
+        <button class="btn lg" type="submit">Subscribe &mdash; ${{ price }}/month</button>
+      </form>
+      {% if not current_email %}
+      <p class="signin">Already a member? <a href="{{ url_for('login', next=request.path) }}">Sign in</a></p>
+      {% endif %}
+    </aside>
+    {% endif %}
+
+    <p class="disclaimer">For informational purposes only; not investment advice. The author may hold positions in the securities discussed. Do your own due diligence.</p>
+  </div>
+</article>
+{% endblock %}

@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}Twelve Intelligence — live entries{% endblock %}
+{% block description %}{{ pro_tagline }}{% endblock %}
+{% block content %}
+<div class="wrap">
+  <div class="page-title">
+    <span class="label br">Twelve Intelligence</span>
+    <h1>{{ pro_tagline }}</h1>
+    <p>When a position sets up, members get a text and an email within seconds &mdash; the ticker, the level, the thesis, and the reasoning behind it. Every note stays here afterwards, alongside the book we run from them.</p>
+  </div>
+
+  {% if not is_pro %}
+  <div class="plan upgrade-card">
+    <span class="label br">Members only</span>
+    <div class="price">${{ pro_price }}<small> / month</small></div>
+    <ul>
+      <li>Live entry alerts by text and email</li>
+      <li>Thesis and rationale on every call</li>
+      <li>The full note archive below</li>
+      <li>Everything in the ${{ price }} Research tier</li>
+    </ul>
+    <form method="post" action="{{ url_for('checkout') }}">
+      <input type="hidden" name="tier" value="intelligence">
+      <button class="btn lg block" type="submit">Join Twelve Intelligence</button>
+    </form>
+    <p class="fine">{% if is_member %}You're on the Research tier &mdash; <a href="{{ url_for('account') }}">upgrade from your account</a>.{% elif not current_email %}Already a member? <a href="{{ url_for('login', next='/intelligence') }}">Sign in</a>{% endif %}</p>
+  </div>
+  {% elif not (phone and phone.verified_at and not phone.opted_out_at) %}
+  <p class="flash">Texts are off. <a href="{{ url_for('account') }}">Add your number</a> to get entries the moment they're posted.</p>
+  {% endif %}
+
+  <ol class="feed">
+    {% for a in alerts %}
+    <li class="alert{{ ' alert-locked' if not is_pro }}">
+      <div class="alert-head">
+        <span class="alert-ticker">{{ a.ticker }}</span>
+        <span class="alert-action act-{{ a.action }}">{{ a.action }}</span>
+        {% if a.level %}<span class="alert-level">@ {{ a.level }}</span>{% endif %}
+        <time datetime="{{ a.created_at }}">{{ a.created_at.strftime('%d %b %Y, %H:%M') }} UTC</time>
+      </div>
+      {% if is_pro %}
+        <p class="alert-thesis">{{ a.thesis }}</p>
+        {% if a.rationale %}<p class="alert-rationale">{{ a.rationale }}</p>{% endif %}
+        <a class="took-it" href="{{ url_for('portfolio', from_alert=a.id) }}">I took this &rarr; add to my portfolio</a>
+      {% else %}
+        <p class="alert-thesis locked-text">Thesis and rationale are for Twelve Intelligence members.</p>
+      {% endif %}
+    </li>
+    {% else %}
+    <li class="empty">No live notes yet.</li>
+    {% endfor %}
+  </ol>
+</div>
+{% endblock %}

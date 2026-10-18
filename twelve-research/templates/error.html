@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}{{ code }} — Twelve Research{% endblock %}
+{% block content %}
+<div class="wrap">
+  <div class="page-title">
+    <span class="label br">{{ code }}</span>
+    <h1>{{ message }}</h1>
+    <p><a href="{{ url_for('home') }}">Return home</a></p>
+  </div>
+</div>
+{% endblock %}

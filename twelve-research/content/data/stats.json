@@ -1,0 +1,44 @@
+{
+  "as_of": "2026-10-06",
+  "source": "Epoch AI",
+  "license": "CC BY 4.0",
+  "eci_closed": {
+    "slope": 14.1,
+    "intercept": 113.01,
+    "r2": 0.96,
+    "n": 22,
+    "latest": "Claude Opus 5.5",
+    "latest_eci": 167.3,
+    "latest_date": "2026-09-22"
+  },
+  "eci_open": {
+    "slope": 13.6,
+    "intercept": 106.74,
+    "r2": 0.98,
+    "n": 25,
+    "latest": "Kimi K3",
+    "latest_eci": 157.4,
+    "latest_date": "2026-07-16"
+  },
+  "open_lag_months": 6.2,
+  "eci_models": 274,
+  "eci_latest_date": "2026-09-29",
+  "compute": {
+    "doublings_per_year": 2.52,
+    "doubling_months": 4.8,
+    "multiple_per_year": 5.7,
+    "r2": 0.98,
+    "today_total": 13954101,
+    "today_largest": 1111673,
+    "centers": 93
+  },
+  "build": {
+    "median_months": 26.1,
+    "n_complete": 69,
+    "n_planned": 19,
+    "trend_months_per_year": 0.9,
+    "r2": 0.0,
+    "fastest": 3.6,
+    "slowest": 64.8
+  }
+}

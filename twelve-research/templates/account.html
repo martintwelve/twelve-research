@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}Account — Twelve Research{% endblock %}
+{% block content %}
+<div class="wrap">
+  <div class="page-title">
+    <span class="label br">Account</span>
+    <h1>{% if first_name %}Welcome back, {{ first_name }}.{% else %}Your account.{% endif %}</h1>
+  </div>
+
+  <div class="panel">
+    {% if name %}<div class="row"><span>Name</span><span>{{ name }}</span></div>{% endif %}
+    <div class="row"><span>Email</span><span>{{ current_email }}</span></div>
+    <div class="row"><span>Plan</span><span>{{ tier_label[tier] }}{% if is_member %} &mdash; ${{ pro_price if is_pro else price }}/month{% endif %}</span></div>
+    {% if is_pro %}
+    <div class="row"><span>Alert texts</span><span>
+      {%- if phone and phone.verified_at and not phone.opted_out_at %}On &mdash; {{ phone.phone }}
+      {%- elif phone and phone.opted_out_at %}Off
+      {%- elif phone %}Awaiting confirmation
+      {%- else %}Not set up{% endif -%}
+    </span></div>
+    {% endif %}
+  </div>
+
+  <div class="panel-actions">
+    {% if is_member %}
+      <form method="post" action="{{ url_for('billing_portal') }}"><button class="btn" type="submit">{{ 'Manage billing' if is_pro else 'Upgrade or manage billing' }}</button></form>
+    {% else %}
+      <a class="btn" href="{{ url_for('subscribe') }}">See membership options</a>
+    {% endif %}
+    <a class="btn ghost" href="{{ url_for('portfolio') }}">Your portfolio</a>
+    {% if is_pro %}<a class="btn ghost" href="{{ url_for('intelligence') }}">Open the live feed</a>{% endif %}
+    {% if is_admin %}<a class="btn ghost" href="{{ url_for('admin') }}">Post a live entry</a>{% endif %}
+    <form method="post" action="{{ url_for('logout') }}"><button class="btn ghost" type="submit">Sign out</button></form>
+  </div>
+
+  {% if is_pro %}
+  <section class="sms-setup">
+    <h2 class="label br">Alert texts</h2>
+    {% if phone and phone.verified_at and not phone.opted_out_at %}
+      <p>Live entries go to <strong>{{ phone.phone }}</strong>. Reply STOP to any message, or switch them off here.</p>
+      <form method="post" action="{{ url_for('account_phone_remove') }}"><button class="btn ghost" type="submit">Turn texts off</button></form>
+    {% else %}
+      {% if phone and phone.code %}
+      <form class="form" method="post" action="{{ url_for('account_phone_verify') }}">
+        <label for="code">Enter the 6-digit code we texted to {{ phone.phone }}</label>
+        <input id="code" name="code" inputmode="numeric" pattern="[0-9]*" maxlength="6" required autocomplete="one-time-code">
+        <button class="btn block" type="submit">Confirm my number</button>
+      </form>
+      <p class="hint">Didn't arrive? Re-enter your number below to send a new code.</p>
+      {% endif %}
+      <form class="form" method="post" action="{{ url_for('account_phone') }}">
+        <label for="phone">Mobile number</label>
+        <input id="phone" name="phone" type="tel" autocomplete="tel" placeholder="+1 415 555 0123" required>
+        <label class="check"><input type="checkbox" name="consent" value="1" required>
+          I agree to receive automated alert texts from Twelve Research at this number. Message and data rates may apply; message frequency varies. Reply STOP to end, HELP for help.</label>
+        <button class="btn block" type="submit">Text me a confirmation code</button>
+      </form>
+    {% endif %}
+  </section>
+  {% endif %}
+</div>
+{% endblock %}

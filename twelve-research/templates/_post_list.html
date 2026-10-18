@@ -1,0 +1,21 @@
+{% if articles %}
+<ul class="post-list">
+  {% for a in articles %}
+  <li>
+    <a href="{{ url_for('article', slug=a.slug) }}">
+      <time datetime="{{ a.date.isoformat() }}">{{ a.date.strftime('%b %d, %Y') }}</time>
+      <div>
+        <h3>{{ a.title }}</h3>
+        {% if a.summary %}<p>{{ a.summary }}</p>{% endif %}
+      </div>
+      <div class="tags">
+        {% for t in a.tickers %}<span class="tag">${{ t }}</span>{% endfor %}
+        {% if a.access == 'free' %}<span class="tag br">Free</span>{% else %}<span class="tag member br">Members</span>{% endif %}
+      </div>
+    </a>
+  </li>
+  {% endfor %}
+</ul>
+{% else %}
+<p class="empty">No research published yet.</p>
+{% endif %}

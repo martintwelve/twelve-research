@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% block title %}Post an entry — Twelve Research{% endblock %}
+{% block content %}
+<div class="wrap">
+  <div class="page-title">
+    <span class="label br">Desk</span>
+    <h1>Post a live entry.</h1>
+  </div>
+
+  <form class="form admin-form" method="post" action="{{ url_for('admin_publish') }}">
+    <div class="admin-row">
+      <div>
+        <label for="ticker">Ticker</label>
+        <input id="ticker" name="ticker" required autocapitalize="characters" autocomplete="off" placeholder="NVDA">
+      </div>
+      <div>
+        <label for="action">Action</label>
+        <select id="action" name="action">
+          {% for a in actions %}<option value="{{ a }}">{{ a|capitalize }}</option>{% endfor %}
+        </select>
+      </div>
+      <div>
+        <label for="level">Level</label>
+        <input id="level" name="level" inputmode="decimal" autocomplete="off" placeholder="142.50">
+      </div>
+    </div>
+
+    <label for="thesis">Thesis</label>
+    <textarea id="thesis" name="thesis" rows="3" required placeholder="What the position is and why now. The first ~160 characters go in the text message."></textarea>
+
+    <label for="rationale">Rationale</label>
+    <textarea id="rationale" name="rationale" rows="5" placeholder="The fuller reasoning: what the market is missing, the risk, the invalidation level."></textarea>
+
+    <label class="check"><input type="checkbox" name="notify" value="1" checked> Text and email Twelve Intelligence members</label>
+    <label class="check"><input type="checkbox" name="to_book" value="1"> Add to the Twelve book at this level &mdash;
+      <input class="inline-input" name="book_shares" inputmode="decimal" placeholder="shares"></label>
+    <button class="btn lg block" type="submit">Publish</button>
+  </form>
+
+  <section class="twelve-book">
+    <h2 class="admin-recent label br">The Twelve book</h2>
+    {% with data=book, book_mode=True %}{% include "_book_table.html" %}{% endwith %}
+    <details class="add-position">
+      <summary>Add a position by hand</summary>
+      <form class="form" method="post" action="{{ url_for('portfolio_add') }}">
+        <input type="hidden" name="book" value="1">
+        <div class="admin-row">
+          <div><label for="b_ticker">Ticker</label><input id="b_ticker" name="ticker" required autocapitalize="characters"></div>
+          <div><label for="b_shares">Shares</label><input id="b_shares" name="shares" inputmode="decimal" required></div>
+          <div><label for="b_cost">Price</label><input id="b_cost" name="cost_basis" inputmode="decimal" required></div>
+        </div>
+        <button class="btn block" type="submit">Add to the book</button>
+      </form>
+    </details>
+  </section>
+
+  <h2 class="admin-recent label br">Recent notes</h2>
+  <ol class="feed">
+    {% for a in alerts %}
+    <li class="alert">
+      <div class="alert-head">
+        <span class="alert-ticker">{{ a.ticker }}</span>
+        <span class="alert-action act-{{ a.action }}">{{ a.action }}</span>
+        {% if a.level %}<span class="alert-level">@ {{ a.level }}</span>{% endif %}
+        <time datetime="{{ a.created_at }}">{{ a.created_at.strftime('%d %b, %H:%M') }}</time>
+        <span class="alert-sent">{{ a.sent_sms }} texts · {{ a.sent_email }} emails</span>
+        <form method="post" action="{{ url_for('admin_delete', alert_id=a.id) }}" onsubmit="return confirm('Delete this note from the feed? Texts already sent cannot be recalled.')">
+          <button class="link-btn" type="submit">Delete</button>
+        </form>
+      </div>
+      <p class="alert-thesis">{{ a.thesis }}</p>
+    </li>
+    {% else %}
+    <li class="empty">Nothing posted yet.</li>
+    {% endfor %}
+  </ol>
+</div>
+{% endblock %}

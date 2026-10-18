@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}Portfolio — Twelve Research{% endblock %}
+{% block content %}
+<div class="wrap">
+  <div class="page-title">
+    <span class="label br">Portfolio</span>
+    <h1>{% if first_name %}Welcome back, {{ first_name }}.{% else %}Your portfolio.{% endif %}</h1>
+    <p>Positions you're holding, marked at the last close. Nothing here is shared with anyone else.</p>
+  </div>
+
+  {% with data=mine, book_mode=False %}{% include "_book_table.html" %}{% endwith %}
+
+  <details class="add-position" {{ 'open' if prefill }}>
+    <summary>Add a position</summary>
+    <form class="form" method="post" action="{{ url_for('portfolio_add') }}">
+      <div class="admin-row">
+        <div><label for="ticker">Ticker</label>
+          <input id="ticker" name="ticker" required autocapitalize="characters" value="{{ prefill.ticker or '' }}"></div>
+        <div><label for="shares">Shares</label>
+          <input id="shares" name="shares" inputmode="decimal" required></div>
+        <div><label for="cost_basis">Your price</label>
+          <input id="cost_basis" name="cost_basis" inputmode="decimal" required value="{{ prefill.price or '' }}"></div>
+      </div>
+      <label for="opened_on">Date opened</label>
+      <input id="opened_on" name="opened_on" type="date" value="{{ today }}">
+      <label for="note">Note</label>
+      <input id="note" name="note" maxlength="200" placeholder="Optional — why you took it">
+      {% if prefill.alert_id %}<input type="hidden" name="alert_id" value="{{ prefill.alert_id }}">{% endif %}
+      <button class="btn block" type="submit">Add position</button>
+    </form>
+  </details>
+
+  {% if book %}
+  <section class="twelve-book">
+    <div class="section-head">
+      <h2 class="br">The Twelve book</h2>
+      <a href="{{ url_for('intelligence') }}">Live notes &rarr;</a>
+    </div>
+    <p class="book-intro">Every position we've taken from our own entries, marked at the last close. Return on cost, not a time-weighted return.</p>
+    {% with data=book, book_mode=False, readonly=True %}
+      <div class="readonly-book">{% include "_book_table.html" %}</div>
+    {% endwith %}
+  </section>
+  {% elif not is_member %}
+  <p class="flash">The Twelve book &mdash; every position taken from our own entries &mdash; is open to members. <a href="{{ url_for('subscribe') }}">See membership</a>.</p>
+  {% endif %}
+</div>
+{% endblock %}

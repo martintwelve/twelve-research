@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}Check your email — Twelve Research{% endblock %}
+{% block content %}
+<div class="wrap">
+  <div class="page-title">
+    <span class="label br">Check your email</span>
+    <h1>A link is on its way.</h1>
+    <p>We sent a sign-in link to {{ email }}. It expires in 30 minutes. If it doesn't arrive, check spam or <a href="{{ url_for('login') }}">try again</a>.</p>
+  </div>
+</div>
+{% endblock %}

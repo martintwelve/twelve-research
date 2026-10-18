@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Welcome — Twelve Research{% endblock %}
+{% block content %}
+<div class="wrap">
+  <div class="page-title">
+    <span class="label br">Welcome</span>
+    <h1>You're in.</h1>
+    <p>Your membership is active and you're signed in as {{ current_email }}. On another device, sign in with that email and we'll send you a link.</p>
+  </div>
+  <a class="btn lg" href="{{ url_for('research') }}">Start reading</a>
+</div>
+{% endblock %}

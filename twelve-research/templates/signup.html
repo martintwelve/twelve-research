@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}Create an account — Twelve Research{% endblock %}
+{% block content %}
+<div class="wrap">
+  <div class="page-title">
+    <span class="label br">Create an account</span>
+    <h1>Free to join.</h1>
+    <p>An account lets you track your own portfolio and keeps you signed in. There's no password to remember &mdash; we email you a link when you want to sign in.</p>
+  </div>
+  <form class="form" method="post" action="{{ url_for('signup') }}">
+    <label for="name">Name</label>
+    <input id="name" name="name" autocomplete="name" required autofocus>
+    <label for="email">Email</label>
+    <input id="email" type="email" name="email" autocomplete="email" required>
+    <input type="hidden" name="next" value="{{ next }}">
+    <button class="btn lg block" type="submit">Create my account</button>
+    <p class="hint">Already have one? <a href="{{ url_for('login') }}">Sign in</a>. Want the research too? <a href="{{ url_for('subscribe') }}">See membership</a>.</p>
+  </form>
+</div>
+{% endblock %}
